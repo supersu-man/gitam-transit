@@ -1,0 +1,68 @@
+[
+  {
+    "busName" : "G1",
+    "startPoint" : "Hayath Nagar",
+    "stops" : [
+      {
+        "stopName" : "Stop name da",
+        "stopCoordinates" : "stop coordinates da"
+      },
+      {
+        "stopName" : "Stop name da",
+        "stopCoordinates" : "stop coordinates da"
+      },
+      {
+        "stopName" : "Stop name da",
+        "stopCoordinates" : "stop coordinates da"
+      },
+      {
+        "stopName" : "Stop name da",
+        "stopCoordinates" : "stop coordinates da"
+      }
+    ]
+  },
+  {
+    "busName" : "G2",
+    "startPoint" : "Bayath Nagar",
+    "stops" : [
+      {
+        "stopName" : "Stop name da",
+        "stopCoordinates" : "stop coordinates da"
+      },
+      {
+        "stopName" : "Stop name da",
+        "stopCoordinates" : "stop coordinates da"
+      },
+      {
+        "stopName" : "Stop name da",
+        "stopCoordinates" : "stop coordinates da"
+      },
+      {
+        "stopName" : "Stop name da",
+        "stopCoordinates" : "stop coordinates da"
+      }
+    ]
+  },
+  {
+    "busName" : "G3",
+    "startPoint" : "Layath Nagar",
+    "stops" : [
+      {
+        "stopName" : "Stop name da",
+        "stopCoordinates" : "stop coordinates da"
+      },
+      {
+        "stopName" : "Stop name da",
+        "stopCoordinates" : "stop coordinates da"
+      },
+      {
+        "stopName" : "Stop name da",
+        "stopCoordinates" : "stop coordinates da"
+      },
+      {
+        "stopName" : "Stop name da",
+        "stopCoordinates" : "stop coordinates da"
+      }
+    ]
+  }
+]

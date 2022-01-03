@@ -3,7 +3,13 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/Projects/GitamTransit/app/src/main/res/layout/activity_main.xml" value="0.24909420289855072" />
+        <entry key="..\:/Projects/GitamTransit/app/src/main/res/layout/activity_main.xml" value="0.20878623188405798" />
+        <entry key="..\:/Projects/GitamTransit/app/src/main/res/layout/activity_maps.xml" value="0.2557291666666667" />
+        <entry key="..\:/Projects/GitamTransit/app/src/main/res/layout/each_route.xml" value="0.346875" />
+        <entry key="..\:/Projects/GitamTransit/app/src/main/res/layout/fragment_routes.xml" value="0.24682971014492755" />
+        <entry key="..\:/Projects/GitamTransit/app/src/main/res/layout/fragment_search.xml" value="0.24682971014492755" />
+        <entry key="..\:/Projects/GitamTransit/app/src/main/res/menu/menu.xml" value="0.346875" />
+        <entry key="..\:/Projects/GitamTransit/app/src/main/res/xml/each_route.xml" value="0.346875" />
       </map>
     </option>
   </component>

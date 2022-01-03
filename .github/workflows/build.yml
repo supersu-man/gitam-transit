@@ -1,0 +1,68 @@
+name: Build
+on:
+  push:
+    tags:
+      - 'v*'
+jobs:
+  Build:
+    name: Build/Sign APK
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Access Api keys
+        env:
+          apiKey: ${{ secrets.API_KEY }}
+          path: app/src/main/res/values/secrets.xml
+        run: |
+          touch $path
+          echo \<resources\> >> $path
+          echo \<string name=\"google_maps_key\"\>$apiKey\</string\> >> $path
+          echo \</resources\> >> $path
+
+      - name: Build APK
+        run: bash ./gradlew assembleRelease
+
+      - name: Sign APK
+        id: sign_app
+        uses: r0adkll/sign-android-release@v1
+        with:
+          releaseDirectory: app/build/outputs/apk/release
+          signingKeyBase64: ${{ secrets.SIGNINGKEYBASE64 }}
+          alias: ${{ secrets.ALIAS }}
+          keyStorePassword: ${{ secrets.KEYSTOREPASSWORD }}
+          keyPassword: ${{ secrets.KEYPASSWORD }}
+
+      - name: Rename APK
+        run: mv ${{steps.sign_app.outputs.signedReleaseFile}} app-release-signed.apk
+
+      - name: Make artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: app-release-signed
+          path: app-release-signed.apk
+
+      - name: Create release
+        uses: actions/create-release@v1
+        id: create_release
+        with:
+          draft: false
+          prerelease: false
+          release_name: Release ${{ github.ref }}
+          tag_name: ${{ github.ref }}
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Get Tag
+        id: var
+        run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
+
+      - name: Upload APK
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: app-release-signed.apk
+          asset_name: app-release-signed-${{ steps.var.outputs.tag }}.apk
+          asset_content_type: application/zip

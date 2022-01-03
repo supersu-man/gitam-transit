@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cardView"
+    style="@style/Widget.Material3.CardView.Filled"
+    android:layout_margin="10dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+            android:id="@+id/textView1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="Bus Number"
+            tools:ignore="HardcodedText" />
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:layout_below="@+id/textView1"
+            android:text="Starting Point"
+            tools:ignore="HardcodedText" />
+    </RelativeLayout>
+
+
+
+
+</com.google.android.material.card.MaterialCardView>
+

@@ -1,0 +1,10 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/routeMenu"
+        android:icon="@drawable/ic_baseline_directions_bus_24"
+        android:title="Routes"/>
+    <item
+        android:id="@+id/searchMenu"
+        android:icon="@drawable/ic_baseline_search_24"
+        android:title="Search"/>
+</menu>

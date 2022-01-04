@@ -10,11 +10,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.launch
 import org.json.JSONArray
+import java.io.InputStreamReader
 
 
 class RoutesFragment : Fragment() {
-
-
 
     private lateinit var recyclerView: RecyclerView
     private var data = mutableListOf<RoutesData>()
@@ -49,10 +48,11 @@ class RoutesFragment : Fragment() {
     private fun getData() {
         val jsonString = requireContext().assets.open("routesTesting.json").bufferedReader().use { it.readText() }
         val routes = JSONArray(jsonString)
+        data.clear()
         for(i in 0 until routes.length()){
             val it = routes.getJSONObject(i)
-            val busName = it.get("busName") as String
-            val startPoint = it.get("startPoint") as String
+            val busName = it.get("busName").toString()
+            val startPoint = it.get("startPoint").toString()
             val busInfo = RoutesData(busName, startPoint, it.get("route").toString())
             data.add(busInfo)
         }

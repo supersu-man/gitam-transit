@@ -8,8 +8,6 @@ import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
-import org.json.JSONArray
-import org.json.JSONObject
 
 class RoutesAdapter(private val data: MutableList<RoutesData>, private val requireActivity: FragmentActivity) : RecyclerView.Adapter<RoutesAdapter.ViewHolder>() {
     class ViewHolder(view : View) : RecyclerView.ViewHolder(view) {

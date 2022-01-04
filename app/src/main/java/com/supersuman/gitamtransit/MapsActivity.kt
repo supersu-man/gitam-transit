@@ -1,37 +1,27 @@
 package com.supersuman.gitamtransit
 
-import android.graphics.Color
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-import com.amalbit.trail.OverlayMarker
-import com.amalbit.trail.Route
-import com.amalbit.trail.RouteOverlayView
 
+import android.graphics.Color
+import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.LatLngBounds
+import com.google.android.gms.maps.model.PolylineOptions
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.supersuman.gitamtransit.databinding.ActivityMapsBinding
 import org.json.JSONArray
-import com.google.android.gms.maps.model.PolylineOptions
-
-import com.google.android.gms.maps.model.Polyline
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import com.google.android.gms.maps.model.LatLngBounds
-
-
-
-
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityMapsBinding
-    private lateinit var route : JSONArray
+    private lateinit var floatingActionButton: FloatingActionButton
+    private val list = mutableListOf<LatLng>()
+    private var boolean = false
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,7 +30,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        route = JSONArray(intent.getStringExtra("route").toString())
+        val route = JSONArray(intent.getStringExtra("route").toString())
+        getRoute(route)
+        floatingActionButton = findViewById(R.id.floatingActionButton)
 
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
@@ -49,31 +41,41 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
 
         mMap = googleMap
-        addRoute(mMap, route)
+        addRoute()
+        initListeners()
 
     }
 
-    private fun addRoute(mMap: GoogleMap, route: JSONArray){
-        var latitude = route.getJSONArray(0).getDouble(0)
-        var longitude = route.getJSONArray(0).getDouble(1)
-        val stop = LatLng(latitude, longitude)
-
-
-        val list = mutableListOf<LatLng>()
+    private fun getRoute(route: JSONArray) {
+        list.clear()
         for(i in 0 until route.length()){
-            latitude = route.getJSONArray(i).getDouble(0)
-            longitude = route.getJSONArray(i).getDouble(1)
+            val latitude = route.getJSONArray(i).getDouble(0)
+            val longitude = route.getJSONArray(i).getDouble(1)
             list.add(LatLng(latitude, longitude))
         }
+    }
 
+    private fun addRoute(){
         mMap.addPolyline(PolylineOptions()
             .addAll(list)
             .width(13f)
             .color(Color.RED)
         )
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(getCenterPointInPolygon(list), 10.0f))
+    }
 
-        mMap.moveCamera(CameraUpdateFactory.zoomTo(10.0f))
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(getCenterPointInPolygon(list)))
+    private fun initListeners() {
+        floatingActionButton.setOnClickListener {
+            if (boolean){
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(getCenterPointInPolygon(list), 10.0f))
+                boolean = false
+            }
+            else{
+                val stop = list[0]
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(stop, 15.0f))
+                boolean = true
+            }
+        }
     }
 
     private fun getCenterPointInPolygon(list: MutableList<LatLng>): LatLng {

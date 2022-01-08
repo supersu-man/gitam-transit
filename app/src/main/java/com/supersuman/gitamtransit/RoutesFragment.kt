@@ -10,13 +10,17 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.launch
 import org.json.JSONArray
-import java.io.InputStreamReader
+import android.content.Context
+import android.content.SharedPreferences
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import java.lang.reflect.Type
 
 
 class RoutesFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
-    private var data = mutableListOf<RoutesData>()
+    private lateinit var mPrefs : SharedPreferences
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -31,32 +35,28 @@ class RoutesFragment : Fragment() {
         initViews()
         modifyViews()
         getData()
-        //getLatestData()
+
     }
 
     private fun initViews() {
         recyclerView = requireActivity().findViewById(R.id.recyclerView)
+        mPrefs = requireActivity().getPreferences(Context.MODE_PRIVATE)
     }
     private fun modifyViews() {
         val linearManager =LinearLayoutManager(requireActivity().applicationContext,
             LinearLayoutManager.VERTICAL,false)
         recyclerView.layoutManager = linearManager
-        recyclerView.adapter = RoutesAdapter(data, requireActivity())
+        recyclerView.adapter = RoutesAdapter(mutableListOf(), requireActivity())
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     private fun getData() {
-        val jsonString = requireContext().assets.open("routesTesting.json").bufferedReader().use { it.readText() }
-        val routes = JSONArray(jsonString)
-        data.clear()
-        for(i in 0 until routes.length()){
-            val it = routes.getJSONObject(i)
-            val busName = it.get("busName").toString()
-            val startPoint = it.get("startPoint").toString()
-            val busInfo = RoutesData(busName, startPoint, it.get("route").toString())
-            data.add(busInfo)
+        coroutineScope.launch {
+            val gson = Gson()
+            val json = mPrefs.getString("RoutesDataList", "")
+            val type: Type = object : TypeToken<MutableList<RoutesData?>?>() {}.type
+            val data : MutableList<RoutesData> =  gson.fromJson(json, type)
+            recyclerView.adapter = RoutesAdapter(data, requireActivity())
         }
-        recyclerView.adapter?.notifyDataSetChanged()
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -64,15 +64,14 @@ class RoutesFragment : Fragment() {
         val jsonString =
             khttp.get("https://raw.githubusercontent.com/supersu-man/GitamTransit/main/app/src/main/assets/routesTesting.json").text
         val routes = JSONArray(jsonString)
+        val data = mutableListOf<RoutesData>()
         for (i in 0 until routes.length()) {
             val it = routes.getJSONObject(i)
             val busName = it.get("busName") as String
             val startPoint = it.get("startPoint") as String
-            val busInfo = RoutesData(busName, startPoint, it.get("route") as String)
+            val busInfo = RoutesData(busName, startPoint, it.get("route").toString(), mutableListOf())
             data.add(busInfo)
         }
-        requireActivity().runOnUiThread {
-            recyclerView.adapter?.notifyDataSetChanged()
-        }
+        recyclerView.adapter = RoutesAdapter(data, requireActivity())
     }
 }

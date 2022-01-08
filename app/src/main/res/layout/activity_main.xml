@@ -23,4 +23,28 @@
         app:menu="@menu/menu"
         />
 
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:indeterminate="false"
+        android:id="@+id/progressbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
+
+    <TextView
+        android:visibility="invisible"
+        android:id="@+id/mainActivityTextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/progressbar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:padding="50dp"
+        android:gravity="center"
+        android:text="Loading all the bus routes. This a one time process, please be patient."
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

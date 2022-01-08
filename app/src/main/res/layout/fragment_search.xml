@@ -7,7 +7,8 @@
     tools:context=".SearchFragment">
 
     <com.google.android.material.textfield.TextInputLayout
-        android:layout_margin="30dp"
+        android:id="@+id/textInputLayout"
+        android:layout_margin="20dp"
         android:layout_width="match_parent"
         app:boxCornerRadiusTopStart="30dp"
         app:boxCornerRadiusTopEnd="30dp"
@@ -15,10 +16,17 @@
         app:boxCornerRadiusBottomEnd="30dp"
         android:layout_height="wrap_content">
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/textInputEditText"
             android:padding="5dp"
             android:layout_width="match_parent"
             android:hint="Search anything"
             android:layout_height="50dp"/>
     </com.google.android.material.textfield.TextInputLayout>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView2"
+        android:layout_below="@+id/textInputLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
 
 </RelativeLayout>

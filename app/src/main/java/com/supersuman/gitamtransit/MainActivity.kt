@@ -57,7 +57,10 @@ class MainActivity : AppCompatActivity() {
                 runOnUiThread{ showProgressBar() }
                 val list = getAssetsData()
                 saveData(list, "RoutesDataList")
-                runOnUiThread { cancelProgressBar() }
+                runOnUiThread {
+                    cancelProgressBar()
+                    setFragment()
+                }
             }
         }
         else{

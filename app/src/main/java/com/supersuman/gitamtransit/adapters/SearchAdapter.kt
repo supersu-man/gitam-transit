@@ -1,4 +1,4 @@
-package com.supersuman.gitamtransit
+package com.supersuman.gitamtransit.adapters
 
 import android.content.Intent
 import android.view.LayoutInflater
@@ -9,6 +9,9 @@ import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
+import com.supersuman.gitamtransit.MapsActivity
+import com.supersuman.gitamtransit.NewData
+import com.supersuman.gitamtransit.R
 
 class SearchAdapter(private val data: MutableList<NewData>, private val requireActivity: FragmentActivity) : RecyclerView.Adapter<SearchAdapter.ViewHolder>() {
     class ViewHolder(view : View) : RecyclerView.ViewHolder(view) {

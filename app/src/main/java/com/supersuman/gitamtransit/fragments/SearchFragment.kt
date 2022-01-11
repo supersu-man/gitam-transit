@@ -1,4 +1,4 @@
-package com.supersuman.gitamtransit
+package com.supersuman.gitamtransit.fragments
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -16,6 +16,10 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.supersuman.gitamtransit.NewData
+import com.supersuman.gitamtransit.R
+import com.supersuman.gitamtransit.RoutesData
+import com.supersuman.gitamtransit.adapters.SearchAdapter
 import java.lang.reflect.Type
 
 

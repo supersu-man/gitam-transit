@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/main_item"
+        android:title="Menu">
+        <menu>
+            <item
+                android:id="@+id/contribute_item"
+                android:icon="@drawable/ic_baseline_playlist_add_24"
+                android:title="Contribute" />
+            <item
+                android:id="@+id/telegram_item"
+                android:icon="@drawable/ic_baseline_forum_24"
+                android:title="Join Telegram" />
+        </menu>
+    </item>
+
+</menu>

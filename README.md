@@ -31,3 +31,14 @@ This project proposes a system which would store the entire information of all t
 The app is still being tested and more routes of busses are being added. You can get the app from [here](https://github.com/supersu-man/GitamTransit/releases/tag/Pre-alpha6) to try.
 
 Once the app is done with adding all the Buse routes, then more information like fees, timings, etc will be added. If more people start using it then other transit options will also be added so people can pool together. Will also make a contribution app using which people can contribute the information of their bus routes if there is a change in bus route or maybe a tracking system in future. 
+
+## Contributing
+You can contribute to the project by letting us know your bus route.
+### Level 1
+- Go to [Google Maps](https://www.google.com/maps/) and make a route by adding staring point and destination point.
+- Change the route by dragging the blue colored line (path) accordingly to match your bus route.
+- Click on menu button on top left and then select "Share or embed map", now copy the link and share it with us.
+### Level 2
+- Go to [MapstoGpx](https://mapstogpx.com/), put the link here from previous step.
+- Click on "Let's Go". 
+- Share the downloaded .gpx file with us.

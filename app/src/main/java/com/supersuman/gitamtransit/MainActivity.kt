@@ -1,35 +1,46 @@
 package com.supersuman.gitamtransit
 
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.location.Address
 import android.location.Geocoder
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.navigation.NavigationView
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.google.gson.Gson
+import com.supersuman.gitamtransit.fragments.RoutesFragment
+import com.supersuman.gitamtransit.fragments.SearchFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONArray
 import java.util.*
-import kotlin.concurrent.thread
 
 val coroutineScope = CoroutineScope(Dispatchers.IO)
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var navigationView : BottomNavigationView
+    private lateinit var bottomNavigationView : BottomNavigationView
+    private lateinit var navigationView : NavigationView
+    private lateinit var drawerLayout : DrawerLayout
     private lateinit var routesFragment : RoutesFragment
     private lateinit var searchFragment : SearchFragment
     private lateinit var progressBar : CircularProgressIndicator
     private lateinit var textView : TextView
     private lateinit var mPrefs : SharedPreferences
+    private lateinit var menuButton: MaterialButton
+    private lateinit var title : TextView
 
-    private val mainFragment = R.id.mainFragment
+    private val frameLayout = R.id.mainActivityFrameLayout
     private val routeMenu = R.id.routeMenu
     private val searchMenu = R.id.searchMenu
 
@@ -43,12 +54,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initViews() {
-        navigationView = findViewById(R.id.navigationView)
+        title = findViewById(R.id.mainActivityTitle)
+        navigationView = findViewById(R.id.mainActivityNavigationView)
+        drawerLayout = findViewById(R.id.mainActivityDrawerLayout)
+        bottomNavigationView = findViewById(R.id.mainActivityBottomNavigationView)
         routesFragment = RoutesFragment()
         searchFragment = SearchFragment()
         progressBar = findViewById(R.id.progressbar)
         textView = findViewById(R.id.mainActivityTextView)
         mPrefs = getPreferences(Context.MODE_PRIVATE)
+        menuButton = findViewById(R.id.mainActivityMenuButton)
     }
 
     private fun getData(){
@@ -118,8 +133,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun setFragment() {
         val manager = supportFragmentManager.beginTransaction()
-        manager.replace(mainFragment, routesFragment)
+        manager.replace(frameLayout, routesFragment)
         manager.commit()
+        title.text = "Bus Routes"
     }
 
     private fun showProgressBar() {
@@ -133,17 +149,38 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initListeners() {
-        navigationView.setOnItemSelectedListener {
+
+        menuButton.setOnClickListener {
+            drawerLayout.open()
+        }
+
+        navigationView.setNavigationItemSelectedListener {
+            drawerLayout.close()
+            when(it.itemId){
+                R.id.contribute_item -> {
+                    val intent = Intent(this, ContributionActivity::class.java)
+                    startActivity(intent)
+                }
+                R.id.telegram_item -> {
+                    Toast.makeText(this, "Coming Soon...", Toast.LENGTH_SHORT).show()
+                }
+            }
+            true
+        }
+
+        bottomNavigationView.setOnItemSelectedListener {
             when(it.itemId){
                 routeMenu -> {
                     val manager = supportFragmentManager.beginTransaction()
-                    manager.replace(mainFragment, routesFragment)
+                    manager.replace(frameLayout, routesFragment)
                     manager.commit()
+                    title.text = "Bus Routes"
                 }
                 searchMenu -> {
                     val manager = supportFragmentManager.beginTransaction()
-                    manager.replace(mainFragment, searchFragment)
+                    manager.replace(frameLayout, searchFragment)
                     manager.commit()
+                    title.text = "Search"
                 }
             }
             true

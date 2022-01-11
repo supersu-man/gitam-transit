@@ -1,4 +1,4 @@
-package com.supersuman.gitamtransit
+package com.supersuman.gitamtransit.adapters
 
 import android.content.Intent
 import android.view.LayoutInflater
@@ -8,6 +8,9 @@ import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
+import com.supersuman.gitamtransit.MapsActivity
+import com.supersuman.gitamtransit.R
+import com.supersuman.gitamtransit.RoutesData
 
 class RoutesAdapter(private val data: MutableList<RoutesData>, private val requireActivity: FragmentActivity) : RecyclerView.Adapter<RoutesAdapter.ViewHolder>() {
     class ViewHolder(view : View) : RecyclerView.ViewHolder(view) {

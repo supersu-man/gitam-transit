@@ -1,4 +1,4 @@
-package com.supersuman.gitamtransit
+package com.supersuman.gitamtransit.fragments
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -14,6 +14,11 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.supersuman.gitamtransit.R
+import com.supersuman.gitamtransit.RoutesData
+import com.supersuman.gitamtransit.adapters.RoutesAdapter
+import com.supersuman.gitamtransit.coroutineScope
+import kotlinx.coroutines.Dispatchers
 import java.lang.reflect.Type
 
 
@@ -43,20 +48,18 @@ class RoutesFragment : Fragment() {
         mPrefs = requireActivity().getPreferences(Context.MODE_PRIVATE)
     }
     private fun modifyViews() {
-        val linearManager =LinearLayoutManager(requireActivity().applicationContext,
+        val linearManager =LinearLayoutManager(requireActivity(),
             LinearLayoutManager.VERTICAL,false)
         recyclerView.layoutManager = linearManager
         recyclerView.adapter = RoutesAdapter(mutableListOf(), requireActivity())
     }
 
     private fun getData() {
-        coroutineScope.launch {
-            val gson = Gson()
-            val json = mPrefs.getString("RoutesDataList", "")
-            val type: Type = object : TypeToken<MutableList<RoutesData?>?>() {}.type
-            val data : MutableList<RoutesData> =  gson.fromJson(json, type)
-            recyclerView.adapter = RoutesAdapter(data, requireActivity())
-        }
+        val gson = Gson()
+        val json = mPrefs.getString("RoutesDataList", "")
+        val type: Type = object : TypeToken<MutableList<RoutesData?>?>() {}.type
+        val data : MutableList<RoutesData> =  gson.fromJson(json, type)
+        recyclerView.adapter = RoutesAdapter(data, requireActivity())
     }
 
     @SuppressLint("NotifyDataSetChanged")

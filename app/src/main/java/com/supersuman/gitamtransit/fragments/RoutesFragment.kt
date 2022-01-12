@@ -26,6 +26,7 @@ class RoutesFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var mPrefs : SharedPreferences
+    private val data = mutableListOf<RoutesData>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -51,15 +52,20 @@ class RoutesFragment : Fragment() {
         val linearManager =LinearLayoutManager(requireActivity(),
             LinearLayoutManager.VERTICAL,false)
         recyclerView.layoutManager = linearManager
-        recyclerView.adapter = RoutesAdapter(mutableListOf(), requireActivity())
+        recyclerView.adapter = RoutesAdapter(data, requireActivity())
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun getData() {
         val gson = Gson()
         val json = mPrefs.getString("RoutesDataList", "")
         val type: Type = object : TypeToken<MutableList<RoutesData?>?>() {}.type
-        val data : MutableList<RoutesData> =  gson.fromJson(json, type)
-        recyclerView.adapter = RoutesAdapter(data, requireActivity())
+        val dt : MutableList<RoutesData> =  gson.fromJson(json, type)
+        data.clear()
+        for (i in dt){
+            data.add(i)
+        }
+        recyclerView.adapter?.notifyDataSetChanged()
     }
 
     @SuppressLint("NotifyDataSetChanged")

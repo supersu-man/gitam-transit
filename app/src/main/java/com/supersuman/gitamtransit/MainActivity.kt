@@ -17,6 +17,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.google.gson.Gson
+import com.supersuman.gitamtransit.fragments.FavouritesFragment
 import com.supersuman.gitamtransit.fragments.RoutesFragment
 import com.supersuman.gitamtransit.fragments.SearchFragment
 import kotlinx.coroutines.CoroutineScope
@@ -34,23 +35,25 @@ class MainActivity : AppCompatActivity() {
     private lateinit var drawerLayout : DrawerLayout
     private lateinit var routesFragment : RoutesFragment
     private lateinit var searchFragment : SearchFragment
+    private lateinit var favouritesFragment: FavouritesFragment
     private lateinit var progressBar : CircularProgressIndicator
     private lateinit var textView : TextView
     private lateinit var mPrefs : SharedPreferences
     private lateinit var menuButton: MaterialButton
     private lateinit var title : TextView
+    private lateinit var searchButton: MaterialButton
 
     private val frameLayout = R.id.mainActivityFrameLayout
     private val routeMenu = R.id.routeMenu
-    private val searchMenu = R.id.searchMenu
+    private val favouritesMenu = R.id.favouritesMenu
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         initViews()
-        getData()
         initListeners()
+        getData()
     }
 
     private fun initViews() {
@@ -60,25 +63,24 @@ class MainActivity : AppCompatActivity() {
         bottomNavigationView = findViewById(R.id.mainActivityBottomNavigationView)
         routesFragment = RoutesFragment()
         searchFragment = SearchFragment()
+        favouritesFragment = FavouritesFragment()
         progressBar = findViewById(R.id.progressbar)
         textView = findViewById(R.id.mainActivityTextView)
         mPrefs = getPreferences(Context.MODE_PRIVATE)
         menuButton = findViewById(R.id.mainActivityMenuButton)
+        searchButton = findViewById(R.id.mainActivitySearchButton)
     }
 
-    private fun getData(){
-        if (!mPrefs.contains("RoutesDataList")){
-            coroutineScope.launch {
-                runOnUiThread{ showProgressBar() }
-                val list = getAssetsData()
-                saveData(list, "RoutesDataList")
-                runOnUiThread {
-                    cancelProgressBar()
-                    setFragment()
-                }
-            }
+    private fun getData() = coroutineScope.launch{
+        runOnUiThread {
+            showProgressBar()
         }
-        else{
+        if (!mPrefs.contains("RoutesDataList")){
+            val list = getAssetsData()
+            saveData(list, "RoutesDataList")
+        }
+        runOnUiThread {
+            cancelProgressBar()
             setFragment()
         }
     }
@@ -154,6 +156,14 @@ class MainActivity : AppCompatActivity() {
             drawerLayout.open()
         }
 
+        searchButton.setOnClickListener {
+            val manager = supportFragmentManager.beginTransaction()
+            manager.replace(frameLayout, searchFragment)
+            manager.commit()
+            title.text = "Search"
+            bottomNavigationView.menu.getItem(2).isChecked = true
+        }
+
         navigationView.setNavigationItemSelectedListener {
             drawerLayout.close()
             when(it.itemId){
@@ -176,11 +186,11 @@ class MainActivity : AppCompatActivity() {
                     manager.commit()
                     title.text = "Bus Routes"
                 }
-                searchMenu -> {
+                favouritesMenu -> {
                     val manager = supportFragmentManager.beginTransaction()
-                    manager.replace(frameLayout, searchFragment)
+                    manager.replace(frameLayout, favouritesFragment)
                     manager.commit()
-                    title.text = "Search"
+                    title.text = "Favourites"
                 }
             }
             true

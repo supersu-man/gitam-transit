@@ -27,7 +27,6 @@ class SearchFragment : Fragment() {
 
     private lateinit var textInputLayout: TextInputLayout
     private lateinit var textInputEditText: TextInputEditText
-    private var data = mutableListOf<RoutesData>()
     private lateinit var recyclerView: RecyclerView
     private lateinit var mPrefs : SharedPreferences
 
@@ -45,8 +44,8 @@ class SearchFragment : Fragment() {
         initViews()
         modifyViews()
         animateViews()
-        getData()
-        initListeners()
+        val data = getData()
+        initListeners(data)
     }
 
     private fun initViews() {
@@ -70,21 +69,26 @@ class SearchFragment : Fragment() {
         textInputLayout.animate().translationY(0F).alpha(1F).setDuration(600).start()
     }
 
-    private fun getData() {
+    private fun getData(): MutableList<RoutesData> {
         val gson = Gson()
         val json = mPrefs.getString("RoutesDataList", "")
         val type: Type = object : TypeToken<MutableList<RoutesData?>?>() {}.type
-        data =  gson.fromJson(json, type)
+        val data : MutableList<RoutesData> =  gson.fromJson(json, type)
+        return data
     }
 
-    private fun initListeners() {
+    private fun initListeners(data: MutableList<RoutesData>) {
+        if (textInputEditText.text.toString() == ""){
+            val newData = search("", data)
+            recyclerView.adapter = SearchAdapter(newData, requireActivity())
+        }
         textInputEditText.addTextChangedListener{
-            val newData = search(it.toString())
+            val newData = search(it.toString(), data)
             recyclerView.adapter = SearchAdapter(newData, requireActivity())
         }
     }
 
-    private fun search(keyword : String): MutableList<NewData> {
+    private fun search(keyword: String, data: MutableList<RoutesData>): MutableList<NewData> {
         val newData = mutableListOf<NewData>()
         for (i in data){
             val temp = mutableListOf<String>()

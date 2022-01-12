@@ -4,14 +4,17 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Projects/GitamTransit/app/src/main/res/layout/activity_contribution.xml" value="0.22291666666666668" />
-        <entry key="..\:/Projects/GitamTransit/app/src/main/res/layout/activity_main.xml" value="0.33125" />
+        <entry key="..\:/Projects/GitamTransit/app/src/main/res/layout/activity_main.xml" value="0.22395833333333334" />
         <entry key="..\:/Projects/GitamTransit/app/src/main/res/layout/activity_maps.xml" value="0.18177083333333333" />
         <entry key="..\:/Projects/GitamTransit/app/src/main/res/layout/each_route.xml" value="0.346875" />
         <entry key="..\:/Projects/GitamTransit/app/src/main/res/layout/each_search.xml" value="0.2109375" />
+        <entry key="..\:/Projects/GitamTransit/app/src/main/res/layout/fragment_favourites.xml" value="0.22395833333333334" />
         <entry key="..\:/Projects/GitamTransit/app/src/main/res/layout/fragment_routes.xml" value="0.24682971014492755" />
         <entry key="..\:/Projects/GitamTransit/app/src/main/res/layout/fragment_search.xml" value="0.24682971014492755" />
+        <entry key="..\:/Projects/GitamTransit/app/src/main/res/menu/bottom_navigation_menu.xml" value="0.22395833333333334" />
         <entry key="..\:/Projects/GitamTransit/app/src/main/res/menu/bottomnavigationmenu.xml" value="0.27395833333333336" />
         <entry key="..\:/Projects/GitamTransit/app/src/main/res/menu/menu.xml" value="0.346875" />
+        <entry key="..\:/Projects/GitamTransit/app/src/main/res/menu/navigation_menu.xml" value="0.18645833333333334" />
         <entry key="..\:/Projects/GitamTransit/app/src/main/res/menu/navigationmenu.xml" value="0.18072916666666666" />
         <entry key="..\:/Projects/GitamTransit/app/src/main/res/xml/each_route.xml" value="0.346875" />
       </map>

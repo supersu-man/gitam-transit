@@ -8,27 +8,37 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <LinearLayout
+    <RelativeLayout
         android:orientation="vertical"
         android:id="@+id/eachRouteParentLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <TextView
             android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
-            android:id="@+id/textView1"
+            android:id="@+id/eachRouteTextView1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="10dp"
             android:text="Bus Number"
             tools:ignore="HardcodedText" />
         <TextView
-            android:id="@+id/textView2"
+            android:layout_below="@+id/eachRouteTextView1"
+            android:id="@+id/eachRouteTextView2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="10dp"
             android:text="Starting Point"
             tools:ignore="HardcodedText" />
-    </LinearLayout>
+        <ImageView
+            android:id="@+id/eachRouteStarButton"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"
+            android:layout_margin="20dp"
+            android:src="@drawable/ic_baseline_star_outline_24"
+            />
+    </RelativeLayout>
 
 
 

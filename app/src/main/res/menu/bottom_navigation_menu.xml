@@ -4,7 +4,11 @@
         android:icon="@drawable/ic_baseline_directions_bus_24"
         android:title="Routes"/>
     <item
-        android:id="@+id/searchMenu"
-        android:icon="@drawable/ic_baseline_search_24"
-        android:title="Search"/>
+        android:id="@+id/favouritesMenu"
+        android:icon="@drawable/ic_baseline_star_outline_24"
+        android:title="Favourites"/>
+    <item
+        android:id="@+id/invisibleMenu"
+        android:visible="false"
+        />
 </menu>

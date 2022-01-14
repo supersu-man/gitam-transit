@@ -5,21 +5,54 @@
     android:layout_height="match_parent"
     tools:context=".ContributionActivity">
 
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/contributionActivityProgressBar"
+        android:layout_width="300dp"
+        android:layout_centerHorizontal="true"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:layout_above="@+id/contributionActivityKmz2GpxButton"
+        />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/contributionActivityKmz2GpxButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/contributionActivityFileButton"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        android:text="KMZ to GPX" />
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/contributionActivityFileButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Choose GPX file"
-        android:layout_margin="20dp"
+        android:layout_margin="10dp"
         android:layout_centerInParent="true"
         />
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/contributionActivityFolderButton"
         android:layout_below="@+id/contributionActivityFileButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="10dp"
         android:text="Go to Folder"
         android:layout_centerHorizontal="true"
+        />
+
+    <TextView
+        android:id="@+id/contributionActivityTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/contributionActivityFolderButton"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="30dp"
+        android:gravity="center"
         />
 
 </RelativeLayout>

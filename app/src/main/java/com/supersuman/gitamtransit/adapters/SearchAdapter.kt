@@ -15,11 +15,11 @@ import com.google.android.material.card.MaterialCardView
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.supersuman.gitamtransit.MapsActivity
-import com.supersuman.gitamtransit.NewData
 import com.supersuman.gitamtransit.R
+import com.supersuman.gitamtransit.RoutesData
 import java.lang.reflect.Type
 
-class SearchAdapter(private val data: MutableList<NewData>, private val requireActivity: FragmentActivity) : RecyclerView.Adapter<SearchAdapter.ViewHolder>() {
+class SearchAdapter(private val data: MutableList<RoutesData>, private val requireActivity: FragmentActivity) : RecyclerView.Adapter<SearchAdapter.ViewHolder>() {
 
     private val sharedPreferences: SharedPreferences = requireActivity.getPreferences(Context.MODE_PRIVATE)
 
@@ -40,7 +40,7 @@ class SearchAdapter(private val data: MutableList<NewData>, private val requireA
         holder.textView1.text = busName
         holder.textView2.visibility = View.GONE
         var previousTextView = holder.textView1
-        for (i in data[position].results){
+        for (i in data[position].keywords){
             val textView = getNewTextView(previousTextView, i)
             val params = getNewParams(previousTextView)
             holder.parentLayout.addView(textView,params)

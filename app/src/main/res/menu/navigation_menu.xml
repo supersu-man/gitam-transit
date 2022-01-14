@@ -10,6 +10,10 @@
                 android:icon="@drawable/ic_baseline_playlist_add_24"
                 android:title="Contribute" />
             <item
+                android:id="@+id/repository_item"
+                android:icon="@drawable/ic_baseline_summarize_24"
+                android:title="Open Repository" />
+            <item
                 android:id="@+id/telegram_item"
                 android:icon="@drawable/ic_baseline_forum_24"
                 android:title="Join Telegram" />

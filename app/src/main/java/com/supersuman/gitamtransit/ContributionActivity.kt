@@ -1,22 +1,29 @@
 package com.supersuman.gitamtransit
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.location.Address
 import android.location.Geocoder
 import android.net.Uri
 import android.os.Bundle
+import android.widget.ProgressBar
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.progressindicator.LinearProgressIndicator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jsoup.Jsoup
-import java.io.*
+import java.io.BufferedReader
+import java.io.File
+import java.io.FileWriter
+import java.io.InputStreamReader
 import java.util.*
 
 
@@ -24,6 +31,9 @@ class ContributionActivity : AppCompatActivity() {
 
     private lateinit var openFileButton : MaterialButton
     private lateinit var openFolderButton: MaterialButton
+    private lateinit var kmz2GpxButton: MaterialButton
+    private lateinit var textView: TextView
+    private lateinit var progressBar: LinearProgressIndicator
     private val resultLauncher = registerForResult()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,6 +41,7 @@ class ContributionActivity : AppCompatActivity() {
         setContentView(R.layout.activity_contribution)
 
         initViews()
+        modifyViews()
         initListeners()
 
     }
@@ -38,11 +49,26 @@ class ContributionActivity : AppCompatActivity() {
     private fun initViews(){
         openFileButton = findViewById(R.id.contributionActivityFileButton)
         openFolderButton = findViewById(R.id.contributionActivityFolderButton)
+        kmz2GpxButton = findViewById(R.id.contributionActivityKmz2GpxButton)
+        textView = findViewById(R.id.contributionActivityTextView)
+        progressBar = findViewById(R.id.contributionActivityProgressBar)
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun modifyViews(){
+        textView.text = "Check out readme.md file on this github project to know more about contribution.\n Click here to open readme.md."
     }
 
     private fun initListeners(){
+        textView.setOnClickListener {
+            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/supersu-man/GitamTransit#contributing"))
+            startActivity(browserIntent)
+        }
+        kmz2GpxButton.setOnClickListener {
+            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://mygeodata.cloud/converter/kmz-to-gpx"))
+            startActivity(browserIntent)
+        }
         openFileButton.setOnClickListener {
-
             var chooseFile = Intent(Intent.ACTION_GET_CONTENT)
             chooseFile.type = "*/*"
             chooseFile = Intent.createChooser(chooseFile, "Choose a file")
@@ -141,6 +167,9 @@ class ContributionActivity : AppCompatActivity() {
                 previousThoroughfare = thoroughfare
                 mutableList.add(thoroughfare)
             }
+            runOnUiThread {
+                progressBar.progress = (((i+1).toFloat()/latLonList.size) * 100 ).toInt()
+            }
         }
         return mutableList
     }
@@ -149,7 +178,7 @@ class ContributionActivity : AppCompatActivity() {
         var latlonString =""
         for (i in 0 until keywordsList.size){
             val keyword = keywordsList[i]
-            latlonString += keyword
+            latlonString += "\"$keyword\""
             if (i+1<keywordsList.size){
                 latlonString += ",\n"
             }

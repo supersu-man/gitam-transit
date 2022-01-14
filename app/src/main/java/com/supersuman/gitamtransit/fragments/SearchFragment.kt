@@ -14,13 +14,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.commit451.teleprinter.Teleprinter
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import com.supersuman.gitamtransit.NewData
 import com.supersuman.gitamtransit.R
 import com.supersuman.gitamtransit.RoutesData
 import com.supersuman.gitamtransit.adapters.SearchAdapter
-import java.lang.reflect.Type
+import com.supersuman.gitamtransit.coroutineScope
+import kotlinx.coroutines.launch
+import org.json.JSONArray
 
 
 class SearchFragment : Fragment() {
@@ -44,8 +43,12 @@ class SearchFragment : Fragment() {
         initViews()
         modifyViews()
         animateViews()
-        val data = getData()
-        initListeners(data)
+        coroutineScope.launch {
+            val data = getLatestData()
+            requireActivity().runOnUiThread {
+                initListeners(data)
+            }
+        }
     }
 
     private fun initViews() {
@@ -69,36 +72,46 @@ class SearchFragment : Fragment() {
         textInputLayout.animate().translationY(0F).alpha(1F).setDuration(600).start()
     }
 
-    private fun getData(): MutableList<RoutesData> {
-        val gson = Gson()
-        val json = mPrefs.getString("RoutesDataList", "")
-        val type: Type = object : TypeToken<MutableList<RoutesData?>?>() {}.type
-        val data : MutableList<RoutesData> =  gson.fromJson(json, type)
+    private fun getLatestData(): MutableList<RoutesData> {
+        val jsonString =
+            khttp.get("https://raw.githubusercontent.com/supersu-man/GitamTransit/main/assets/busRoutes.json").text
+        val routes = JSONArray(jsonString)
+        val data = mutableListOf<RoutesData>()
+        for (i in 0 until routes.length()) {
+            val it = routes.getJSONObject(i)
+            val busName = it.get("busName").toString()
+            val startPoint = it.get("startPoint").toString()
+            val keywords = JSONArray(it.get("keywords").toString())
+            val keywordArr = mutableListOf<String>()
+            for (j in 0 until keywords.length()){
+                keywordArr.add(keywords.getString(j))
+            }
+            val busInfo = RoutesData(busName, startPoint, it.get("route").toString(), keywordArr)
+            data.add(busInfo)
+        }
         return data
     }
 
     private fun initListeners(data: MutableList<RoutesData>) {
-        if (textInputEditText.text.toString() == ""){
-            val newData = search("", data)
-            recyclerView.adapter = SearchAdapter(newData, requireActivity())
-        }
+        var newData = search(textInputEditText.text.toString(), data)
+        recyclerView.adapter = SearchAdapter(newData, requireActivity())
         textInputEditText.addTextChangedListener{
-            val newData = search(it.toString(), data)
+            newData = search(it.toString(), data)
             recyclerView.adapter = SearchAdapter(newData, requireActivity())
         }
     }
 
-    private fun search(keyword: String, data: MutableList<RoutesData>): MutableList<NewData> {
-        val newData = mutableListOf<NewData>()
+    private fun search(keyword: String, data: MutableList<RoutesData>): MutableList<RoutesData> {
+        val newData = mutableListOf<RoutesData>()
         for (i in data){
             val temp = mutableListOf<String>()
-            for (j in i.coordinatesDetailsList){
+            for (j in i.keywords){
                 val address = j.lowercase()
                 if (keyword in address)
                     temp.add(j)
             }
             if (temp.isNotEmpty())
-                newData.add(NewData(i.busName, i.route, temp))
+                newData.add(RoutesData(i.busName,"", i.route, temp))
         }
         return newData
     }

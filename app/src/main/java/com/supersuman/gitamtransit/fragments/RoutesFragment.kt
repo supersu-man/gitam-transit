@@ -12,7 +12,6 @@ import kotlinx.coroutines.launch
 import org.json.JSONArray
 import android.content.Context
 import android.content.SharedPreferences
-import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.supersuman.gitamtransit.R
 import com.supersuman.gitamtransit.RoutesData
@@ -40,7 +39,7 @@ class RoutesFragment : Fragment() {
 
         initViews()
         modifyViews()
-        getData()
+        getLatestData()
 
     }
 
@@ -48,6 +47,7 @@ class RoutesFragment : Fragment() {
         recyclerView = requireActivity().findViewById(R.id.recyclerView)
         mPrefs = requireActivity().getPreferences(Context.MODE_PRIVATE)
     }
+
     private fun modifyViews() {
         val linearManager =LinearLayoutManager(requireActivity(),
             LinearLayoutManager.VERTICAL,false)
@@ -56,24 +56,11 @@ class RoutesFragment : Fragment() {
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    private fun getData() {
-        val gson = Gson()
-        val json = mPrefs.getString("RoutesDataList", "")
-        val type: Type = object : TypeToken<MutableList<RoutesData?>?>() {}.type
-        val dt : MutableList<RoutesData> =  gson.fromJson(json, type)
-        data.clear()
-        for (i in dt){
-            data.add(i)
-        }
-        recyclerView.adapter?.notifyDataSetChanged()
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
     private fun getLatestData() = coroutineScope.launch {
         val jsonString =
-            khttp.get("https://raw.githubusercontent.com/supersu-man/GitamTransit/main/app/src/main/assets/routesTesting.json").text
+            khttp.get("https://raw.githubusercontent.com/supersu-man/GitamTransit/main/assets/busRoutes.json").text
         val routes = JSONArray(jsonString)
-        val data = mutableListOf<RoutesData>()
+        data.clear()
         for (i in 0 until routes.length()) {
             val it = routes.getJSONObject(i)
             val busName = it.get("busName") as String
@@ -81,6 +68,8 @@ class RoutesFragment : Fragment() {
             val busInfo = RoutesData(busName, startPoint, it.get("route").toString(), mutableListOf())
             data.add(busInfo)
         }
-        recyclerView.adapter = RoutesAdapter(data, requireActivity())
+        requireActivity().runOnUiThread {
+            recyclerView.adapter = RoutesAdapter(data, requireActivity())
+        }
     }
 }

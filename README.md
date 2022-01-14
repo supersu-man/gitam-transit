@@ -35,10 +35,14 @@ Once the app is done with adding all the Buse routes, then more information like
 ## Contributing
 You can contribute to the project by letting us know your bus route.
 ### Level 1
-- Go to [Google Maps](https://www.google.com/maps/) and make a route by adding staring point and destination point.
-- Change the route by dragging the blue colored line (path) accordingly to match your bus route.
-- Click on menu button on top left and then select "Share or embed map", now copy the link and share it with us.
+- Go to [Google Maps](https://www.google.com/mymaps) and create a map.
+- Add directions and change the route by dragging the blue colored line (path) accordingly to match your bus route.
+- Click on menu button on top left and then select "Export to KML/KMZ" and click Download.
 ### Level 2
-- Go to [MapstoGpx](https://mapstogpx.com/), put the link here from previous step.
-- Click on "Let's Go". 
-- Share the downloaded .gpx file with us.
+- Go to [KMZ to GPX](https://mygeodata.cloud/converter/kmz-to-gpx), put the .kmz file downloaded from previous step.
+- Download the .gpx file. 
+### Level 3
+- Open the app, go to Contribution section.
+- CLick on "Choose GPX file" and select the downloaded .gpx file.
+- Wait till the progress bar fills.
+- Click on "Go to Folder" and share those two files with us. 

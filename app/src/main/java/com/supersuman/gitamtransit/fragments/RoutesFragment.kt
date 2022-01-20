@@ -68,8 +68,9 @@ class RoutesFragment : Fragment() {
             val busInfo = RoutesData(busName, startPoint, it.get("route").toString(), mutableListOf())
             data.add(busInfo)
         }
-        requireActivity().runOnUiThread {
-            recyclerView.adapter = RoutesAdapter(data, requireActivity())
+
+        activity?.runOnUiThread {
+            recyclerView.adapter?.notifyDataSetChanged()
         }
     }
 }

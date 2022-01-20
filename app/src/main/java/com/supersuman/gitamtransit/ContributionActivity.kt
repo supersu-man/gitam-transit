@@ -7,7 +7,6 @@ import android.location.Address
 import android.location.Geocoder
 import android.net.Uri
 import android.os.Bundle
-import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
@@ -16,22 +15,32 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.progressindicator.LinearProgressIndicator
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import org.jsoup.Jsoup
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileWriter
 import java.io.InputStreamReader
 import java.util.*
+import com.karumi.dexter.PermissionToken
+
+import com.karumi.dexter.listener.PermissionDeniedResponse
+
+import com.karumi.dexter.listener.PermissionGrantedResponse
+
+import com.karumi.dexter.listener.single.PermissionListener
+
+import com.karumi.dexter.Dexter
+import com.karumi.dexter.listener.PermissionRequest
+import android.content.pm.PackageManager
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 
 class ContributionActivity : AppCompatActivity() {
 
-    private lateinit var openFileButton : MaterialButton
+    private lateinit var chooseFileButton : MaterialButton
     private lateinit var openFolderButton: MaterialButton
-    private lateinit var kmz2GpxButton: MaterialButton
+    private lateinit var progressText : TextView
     private lateinit var textView: TextView
     private lateinit var progressBar: LinearProgressIndicator
     private val resultLauncher = registerForResult()
@@ -42,21 +51,37 @@ class ContributionActivity : AppCompatActivity() {
 
         initViews()
         modifyViews()
+        requestMyPermissions()
         initListeners()
 
     }
 
     private fun initViews(){
-        openFileButton = findViewById(R.id.contributionActivityFileButton)
+        chooseFileButton = findViewById(R.id.contributionActivityFileButton)
         openFolderButton = findViewById(R.id.contributionActivityFolderButton)
-        kmz2GpxButton = findViewById(R.id.contributionActivityKmz2GpxButton)
         textView = findViewById(R.id.contributionActivityTextView)
         progressBar = findViewById(R.id.contributionActivityProgressBar)
+        progressText = findViewById(R.id.contributionActivityProgressText)
     }
 
     @SuppressLint("SetTextI18n")
     private fun modifyViews(){
-        textView.text = "Check out readme.md file on this github project to know more about contribution.\n Click here to open readme.md."
+        textView.text = "Check out readme.md file on this github project to know more about contribution.\nClick here to open readme.md."
+    }
+
+    private fun requestMyPermissions(){
+        Dexter.withContext(this)
+            .withPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            .withListener(object : PermissionListener {
+                override fun onPermissionGranted(response: PermissionGrantedResponse) {}
+                override fun onPermissionDenied(response: PermissionDeniedResponse) {
+                    Toast.makeText(this@ContributionActivity, "xiseyorftnwejowermpnluteprtmv", Toast.LENGTH_SHORT).show()
+                }
+                override fun onPermissionRationaleShouldBeShown(
+                    permission: PermissionRequest?,
+                    token: PermissionToken?
+                ) {}
+            }).check()
     }
 
     private fun initListeners(){
@@ -64,15 +89,15 @@ class ContributionActivity : AppCompatActivity() {
             val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/supersu-man/GitamTransit#contributing"))
             startActivity(browserIntent)
         }
-        kmz2GpxButton.setOnClickListener {
-            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://mygeodata.cloud/converter/kmz-to-gpx"))
-            startActivity(browserIntent)
-        }
-        openFileButton.setOnClickListener {
-            var chooseFile = Intent(Intent.ACTION_GET_CONTENT)
-            chooseFile.type = "*/*"
-            chooseFile = Intent.createChooser(chooseFile, "Choose a file")
-            resultLauncher.launch(chooseFile)
+        chooseFileButton.setOnClickListener {
+            if (permissionsPresent()){
+                var chooseFile = Intent(Intent.ACTION_GET_CONTENT)
+                chooseFile.type = "*/*"
+                chooseFile = Intent.createChooser(chooseFile, "Choose a file")
+                resultLauncher.launch(chooseFile)
+            }else{
+                Toast.makeText(this, "Please give permission", Toast.LENGTH_SHORT).show()
+            }
         }
         openFolderButton.setOnClickListener {
             val selectedUri = Uri.parse(getExternalFilesDir(null).toString())
@@ -82,25 +107,40 @@ class ContributionActivity : AppCompatActivity() {
         }
     }
 
+    private fun permissionsPresent(): Boolean {
+        val permission = android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+        val res = this.checkCallingOrSelfPermission(permission)
+        return res == PackageManager.PERMISSION_GRANTED
+    }
+
     private fun registerForResult(): ActivityResultLauncher<Intent> {
         return registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                CoroutineScope(Dispatchers.IO).launch {
-                    val data = readGPXFile(result.data)
-                    val latLonList = getLatLonList(data)
-                    val latLonString = getLatLonString(latLonList)
-                    writeFile(latLonString, "busroute.txt")
-                    val keywordsList = getKeywordsList(latLonList)
-                    val keyWordString = getKeywordsString(keywordsList)
-                    writeFile(keyWordString, "keywords.txt")
+            if (result.resultCode == Activity.RESULT_OK){
+                when {
+                    result.data?.data.toString().endsWith("gpx") -> {
+                        coroutineScope.launch {
+                            val data = readFile(result.data?.data)
+                            val latLonList = getLatLngGpx(data)
+                            exportFiles(latLonList)
+                        }
+                    }
+                    result.data?.data.toString().endsWith("kml") -> {
+                        coroutineScope.launch {
+                            val data = readFile(result.data?.data)
+                            val latLonList = getLatLngKml(data)
+                            exportFiles(latLonList)
+                        }
+                    }
+                    else -> {
+                        Toast.makeText(this, "Only KML/GPX files are supported", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         }
     }
 
-    private fun readGPXFile(data: Intent?): String {
-        val uri = data?.data
-        val inputStream = contentResolver.openInputStream(uri!!)
+    private fun readFile(data: Uri?): String {
+        val inputStream = contentResolver.openInputStream(data!!)
         val r = BufferedReader(InputStreamReader(inputStream))
         var allLines = ""
         while (true) {
@@ -110,7 +150,7 @@ class ContributionActivity : AppCompatActivity() {
         return allLines
     }
 
-    private fun getLatLonList(data: String): MutableList<LatLng> {
+    private fun getLatLngGpx(data: String): MutableList<LatLng> {
         val latLonList = mutableListOf<LatLng>()
         val soup = Jsoup.parse(data)
         val trackPoints = soup.getElementsByTag("trkpt")
@@ -122,7 +162,31 @@ class ContributionActivity : AppCompatActivity() {
         return latLonList
     }
 
-    private fun getLatLonString(latLonList: MutableList<LatLng>): String{
+    private fun getLatLngKml(data: String): MutableList<LatLng> {
+        val latLonList = mutableListOf<LatLng>()
+        val soup = Jsoup.parse(data)
+        val coordinates = soup.getElementsByTag("coordinates").first()?.text().toString()
+        val coordinatesList = coordinates.split(",0")
+        for (i in coordinatesList) {
+            if ("," !in i) continue
+            val lat = i.split(",")[1].toDouble()
+            val lon = i.split(",")[0].toDouble()
+            latLonList.add(LatLng(lat,lon))
+        }
+        return latLonList
+    }
+
+    private fun exportFiles(latLonList: MutableList<LatLng>) {
+        val keywordsList = reverseGeoCode(latLonList)
+
+        val keyWordString = keywordsListToString(keywordsList)
+        writeFile(keyWordString, "keywords.txt")
+
+        val busRouteTxtData = latLonListToString(latLonList)
+        writeFile(busRouteTxtData, "busroute.txt")
+    }
+
+    private fun latLonListToString(latLonList: MutableList<LatLng>): String{
         var latlonString =""
         for (i in 0 until latLonList.size){
             val lat = latLonList[i].latitude.toString()
@@ -147,7 +211,7 @@ class ContributionActivity : AppCompatActivity() {
         }
     }
     
-    private fun getKeywordsList(latLonList: MutableList<LatLng>): MutableList<String> {
+    private fun reverseGeoCode(latLonList: MutableList<LatLng>): MutableList<String> {
         val mutableList = mutableListOf<String>()
         val geocoder = Geocoder (this, Locale.getDefault())
         var previousLocality = ""
@@ -156,6 +220,7 @@ class ContributionActivity : AppCompatActivity() {
             if (i%2 != 0) continue
             val latitude = latLonList[i].latitude
             val longitude = latLonList[i].longitude
+            println("$latitude $longitude")
             val addresses : List<Address> = geocoder.getFromLocation(latitude, longitude, 1)
             val locality = addresses[0].locality
             val thoroughfare = addresses[0].thoroughfare
@@ -168,13 +233,20 @@ class ContributionActivity : AppCompatActivity() {
                 mutableList.add(thoroughfare)
             }
             runOnUiThread {
-                progressBar.progress = (((i+1).toFloat()/latLonList.size) * 100 ).toInt()
+                val progress = (((i+1).toFloat()/latLonList.size) * 100 ).toInt()
+                progressText.text = "$progress%"
+                progressBar.progress = progress
             }
+        }
+
+        runOnUiThread {
+            progressText.text = "100%"
+            progressBar.progress = 100
         }
         return mutableList
     }
 
-    private fun getKeywordsString(keywordsList: MutableList<String>): String {
+    private fun keywordsListToString(keywordsList: MutableList<String>): String {
         var latlonString =""
         for (i in 0 until keywordsList.size){
             val keyword = keywordsList[i]

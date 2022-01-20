@@ -15,12 +15,15 @@ import com.google.gson.reflect.TypeToken
 import com.supersuman.gitamtransit.R
 import com.supersuman.gitamtransit.RoutesData
 import com.supersuman.gitamtransit.adapters.RoutesAdapter
+import com.supersuman.gitamtransit.coroutineScope
+import kotlinx.coroutines.launch
+import org.json.JSONArray
 import java.lang.reflect.Type
 
 class FavouritesFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var sharedPreferences: SharedPreferences
-    private val newData = mutableListOf<RoutesData>()
+    private val data = mutableListOf<RoutesData>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -34,7 +37,7 @@ class FavouritesFragment : Fragment() {
 
         initViews()
         modifyViews()
-        setData()
+        getLatestData()
         initListeners()
     }
 
@@ -49,36 +52,36 @@ class FavouritesFragment : Fragment() {
             LinearLayoutManager.VERTICAL, false
         )
         recyclerView.layoutManager = linearManager
-        recyclerView.adapter = RoutesAdapter(newData, requireActivity())
+        recyclerView.adapter = RoutesAdapter(data, requireActivity())
     }
 
-    @SuppressLint("NotifyDataSetChanged")
-    private fun setData(){
-        val data = getData()
-        val starList = getStarsList()
-        newData.clear()
-        for (i in data){
-            if (i.busName in starList){
-                newData.add(i)
-            }
-        }
-        recyclerView.adapter?.notifyDataSetChanged()
-    }
 
     private fun initListeners(){
         sharedPreferences.registerOnSharedPreferenceChangeListener { _, key ->
             if (key == "Stars" && activity != null){
-                setData()
+                getLatestData()
             }
         }
     }
 
-    private fun getData(): MutableList<RoutesData> {
-        val gson = Gson()
-        val json = sharedPreferences.getString("RoutesDataList", "")
-        val type: Type = object : TypeToken<MutableList<RoutesData?>?>() {}.type
-        val data: MutableList<RoutesData> = gson.fromJson(json, type)
-        return data
+    @SuppressLint("NotifyDataSetChanged")
+    private fun getLatestData() = coroutineScope.launch {
+        val jsonString =
+            khttp.get("https://raw.githubusercontent.com/supersu-man/GitamTransit/main/assets/busRoutes.json").text
+        val routes = JSONArray(jsonString)
+        data.clear()
+        val starList = getStarsList()
+        for (i in 0 until routes.length()) {
+            val it = routes.getJSONObject(i)
+            val busName = it.get("busName") as String
+            if(busName !in starList) continue
+            val startPoint = it.get("startPoint") as String
+            val busInfo = RoutesData(busName, startPoint, it.get("route").toString(), mutableListOf())
+            data.add(busInfo)
+        }
+        activity?.runOnUiThread {
+            recyclerView.adapter?.notifyDataSetChanged()
+        }
     }
 
     private fun getStarsList(): MutableList<String> {

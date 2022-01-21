@@ -32,7 +32,8 @@ import com.karumi.dexter.listener.single.PermissionListener
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.listener.PermissionRequest
 import android.content.pm.PackageManager
-import kotlinx.coroutines.coroutineScope
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
 import kotlinx.coroutines.launch
 
 
@@ -177,40 +178,21 @@ class ContributionActivity : AppCompatActivity() {
     }
 
     private fun exportFiles(latLonList: MutableList<LatLng>) {
+
+        val jsonObject = JsonObject()
+        jsonObject.addProperty("busName", "")
+        jsonObject.addProperty("startPoint", "")
+
+        val busRouteJsonArray = latLonListToJson(latLonList)
+        jsonObject.add("route", busRouteJsonArray)
+
         val keywordsList = reverseGeoCode(latLonList)
+        val keyWordJsonArray = keywordsListToJson(keywordsList)
+        jsonObject.add("keywords", keyWordJsonArray)
 
-        val keyWordString = keywordsListToString(keywordsList)
-        writeFile(keyWordString, "keywords.txt")
-
-        val busRouteTxtData = latLonListToString(latLonList)
-        writeFile(busRouteTxtData, "busroute.txt")
+        writeFile(jsonObject, "output.txt")
     }
 
-    private fun latLonListToString(latLonList: MutableList<LatLng>): String{
-        var latlonString =""
-        for (i in 0 until latLonList.size){
-            val lat = latLonList[i].latitude.toString()
-            val lon = latLonList[i].longitude.toString()
-            latlonString += "[$lat,$lon]"
-            if (i+1<latLonList.size){
-                latlonString += ",\n"
-            }
-        }
-        return latlonString
-    }
-
-    private fun writeFile(data: String, filename: String) {
-        val file = File(getExternalFilesDir(null), filename)
-        file.createNewFile()
-        val writer = FileWriter(file)
-        writer.write(data)
-        writer.flush()
-        writer.close()
-        runOnUiThread {
-            Toast.makeText(this, "$filename saved", Toast.LENGTH_SHORT).show()
-        }
-    }
-    
     private fun reverseGeoCode(latLonList: MutableList<LatLng>): MutableList<String> {
         val mutableList = mutableListOf<String>()
         val geocoder = Geocoder (this, Locale.getDefault())
@@ -246,17 +228,37 @@ class ContributionActivity : AppCompatActivity() {
         return mutableList
     }
 
-    private fun keywordsListToString(keywordsList: MutableList<String>): String {
-        var latlonString =""
-        for (i in 0 until keywordsList.size){
-            val keyword = keywordsList[i]
-            latlonString += "\"$keyword\""
-            if (i+1<keywordsList.size){
-                latlonString += ",\n"
+    private fun latLonListToJson(latLonList: MutableList<LatLng>): JsonArray {
+        val jsonArray = JsonArray()
+        latLonList.forEach {
+            val temp = JsonArray().apply {
+                this.add(it.latitude)
+                this.add(it.longitude)
             }
+            jsonArray.add(temp)
         }
-        return latlonString
+        return jsonArray
     }
 
+    private fun keywordsListToJson(keywordsList: MutableList<String>): JsonArray {
 
+        val jsonArray = JsonArray()
+        keywordsList.forEach {
+            jsonArray.add(it)
+        }
+        return jsonArray
+    }
+
+    private fun writeFile(jsonObject: JsonObject, filename: String) {
+        val data = jsonObject.toString()
+        val file = File(getExternalFilesDir(null), filename)
+        file.createNewFile()
+        val writer = FileWriter(file)
+        writer.write(data)
+        writer.flush()
+        writer.close()
+        runOnUiThread {
+            Toast.makeText(this, "$filename saved", Toast.LENGTH_SHORT).show()
+        }
+    }
 }

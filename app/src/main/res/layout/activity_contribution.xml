@@ -9,10 +9,11 @@
         android:id="@+id/contributionActivityProgressBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="30dp"
-        android:layout_centerInParent="true"
         android:layout_above="@+id/contributionActivityProgressText"
-        />
+        android:layout_centerInParent="true"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginBottom="10dp" />
 
     <TextView
         android:id="@+id/contributionActivityProgressText"

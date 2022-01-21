@@ -40,4 +40,4 @@ You can contribute to the project by letting us know your bus route.
 - Open the app, go to Contribution section.
 - CLick on "Choose KML/GPX file" and select the downloaded .kml file.
 - Wait till the progress bar fills.
-- Click on "Go to Folder" and share those two files with us. 
+- Click on "Go to Folder" and share the output.txt file with us. 

@@ -80,6 +80,7 @@ class FavouritesFragment : Fragment() {
             data.add(busInfo)
         }
         activity?.runOnUiThread {
+            recyclerView.recycledViewPool.clear()
             recyclerView.adapter?.notifyDataSetChanged()
         }
     }

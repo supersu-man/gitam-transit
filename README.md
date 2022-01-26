@@ -19,7 +19,7 @@ This project proposes a system which would store the entire information of all t
 
 <b> Functionality & Concepts used : </b>
 
-- RelativeLayout : Both the fragments use Relative layout becaus it is a very flexible layout to align views in any order instead of using nested Linear layout.
+- RelativeLayout : Both the fragments use Relative layout because it is a very flexible layout to align views in any order instead of using nested Linear layout.
 - Design / Theme : App uses the all new Material3 design components and the theme which is built using the new Material Theme Builder.
 - RecyclerView : To display all the busses and also the search results efficiently.
 - Google Maps API : To show the bus route on the map visually. 
@@ -30,7 +30,7 @@ This project proposes a system which would store the entire information of all t
 
 The app is still being tested and more routes of busses are being added. You can get the app from [here](https://github.com/supersu-man/GitamTransit/releases/tag/Pre-alpha6) to try.
 
-Once the app is done with adding all the Buse routes, then more information like fees, timings, etc will be added. If more people start using it then other transit options will also be added so people can pool together. Will also make a contribution app using which people can contribute the information of their bus routes if there is a change in bus route or maybe a tracking system in future. 
+Once the app is done with adding all the Bus routes, then more information like fees, timings, etc will be added. If more people start using it then other transit options will also be added so people can pool together. People can contribute by giving information of their bus routes if there is a change in bus route or maybe a tracking system in future. 
 
 ## Contributing
 You can contribute to the project by letting us know your bus route.

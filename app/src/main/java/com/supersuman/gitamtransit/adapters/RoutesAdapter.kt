@@ -25,7 +25,7 @@ class RoutesAdapter(private val data: MutableList<RoutesData>, private val requi
     class ViewHolder(view : View) : RecyclerView.ViewHolder(view) {
         val textView1: TextView = view.findViewById(R.id.eachRouteTextView1)
         val textview2: TextView = view.findViewById(R.id.eachRouteTextView2)
-        val card: MaterialCardView = view.findViewById(R.id.cardView)
+        val card: MaterialCardView = view.findViewById(R.id.eachRouteCardView)
         val starButton : ImageView = view.findViewById(R.id.eachRouteStarButton)
     }
 

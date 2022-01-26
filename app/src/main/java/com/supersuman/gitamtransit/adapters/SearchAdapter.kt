@@ -7,7 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.RelativeLayout
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
@@ -24,33 +24,29 @@ class SearchAdapter(private val data: MutableList<RoutesData>, private val requi
     private val sharedPreferences: SharedPreferences = requireActivity.getPreferences(Context.MODE_PRIVATE)
 
     class ViewHolder(view : View) : RecyclerView.ViewHolder(view) {
-        val textView1 : TextView = view.findViewById(R.id.eachRouteTextView1)
-        val textView2 : TextView = view.findViewById(R.id.eachRouteTextView2)
-        val parentLayout : RelativeLayout = view.findViewById(R.id.eachRouteParentLayout)
-        val cardView : MaterialCardView = view.findViewById(R.id.cardView)
-        val starButton : ImageView = view.findViewById(R.id.eachRouteStarButton)
+        val textView1 : TextView = view.findViewById(R.id.eachSearchTextView1)
+        val linearLayout : LinearLayout = view.findViewById(R.id.eachSearchLinearLayout)
+        val cardView : MaterialCardView = view.findViewById(R.id.eachSearchCardView)
+        val starButton : ImageView = view.findViewById(R.id.eachSearchStarButton)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.each_route,parent,false))
+        return ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.each_search,parent,false))
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val busName = data[position].busName
         holder.textView1.text = busName
-        holder.textView2.visibility = View.GONE
-        var previousTextView = holder.textView1
+        holder.linearLayout.removeAllViews()
         for (i in data[position].keywords){
-            val textView = getNewTextView(previousTextView, i)
-            val params = getNewParams(previousTextView)
-            holder.parentLayout.addView(textView,params)
-            previousTextView = textView
+            val textView = getNewTextView(holder.textView1, i)
+            holder.linearLayout.addView(textView)
         }
         val route = data[position].route
         holder.cardView.setOnClickListener {
             val intent = Intent(requireActivity, MapsActivity::class.java)
             intent.putExtra("route", route)
-            requireActivity.startActivity((intent))
+            requireActivity.startActivity(intent)
         }
 
         val starsList = getStarsList()
@@ -73,17 +69,7 @@ class SearchAdapter(private val data: MutableList<RoutesData>, private val requi
         val padding = previousTextView.paddingLeft
         textView.setPadding(padding, padding, padding, padding)
         textView.text = i
-        textView.id = View.generateViewId()
         return textView
-    }
-
-    private fun getNewParams(previousTextView: TextView): RelativeLayout.LayoutParams {
-        val params = RelativeLayout.LayoutParams(
-            RelativeLayout.LayoutParams.MATCH_PARENT,
-            RelativeLayout.LayoutParams.WRAP_CONTENT
-        )
-        params.addRule(RelativeLayout.BELOW, previousTextView.id)
-        return params
     }
 
     private fun setAllStars(busName: String, starsList: MutableList<String>, holder: ViewHolder) {

@@ -3,38 +3,36 @@ package com.supersuman.gitamtransit
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.location.Address
 import android.location.Geocoder
 import android.net.Uri
 import android.os.Bundle
+import android.provider.OpenableColumns
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toFile
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.progressindicator.LinearProgressIndicator
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
+import com.karumi.dexter.Dexter
+import com.karumi.dexter.PermissionToken
+import com.karumi.dexter.listener.PermissionDeniedResponse
+import com.karumi.dexter.listener.PermissionGrantedResponse
+import com.karumi.dexter.listener.PermissionRequest
+import com.karumi.dexter.listener.single.PermissionListener
+import kotlinx.coroutines.launch
 import org.jsoup.Jsoup
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileWriter
 import java.io.InputStreamReader
 import java.util.*
-import com.karumi.dexter.PermissionToken
-
-import com.karumi.dexter.listener.PermissionDeniedResponse
-
-import com.karumi.dexter.listener.PermissionGrantedResponse
-
-import com.karumi.dexter.listener.single.PermissionListener
-
-import com.karumi.dexter.Dexter
-import com.karumi.dexter.listener.PermissionRequest
-import android.content.pm.PackageManager
-import com.google.gson.JsonArray
-import com.google.gson.JsonObject
-import kotlinx.coroutines.launch
 
 
 class ContributionActivity : AppCompatActivity() {
@@ -117,17 +115,18 @@ class ContributionActivity : AppCompatActivity() {
     private fun registerForResult(): ActivityResultLauncher<Intent> {
         return registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK){
+                val uri = result.data?.data!!
                 when {
-                    result.data?.data.toString().endsWith("gpx") -> {
+                    getFileName(uri).endsWith("gpx") -> {
                         coroutineScope.launch {
-                            val data = readFile(result.data?.data)
+                            val data = readFile(uri)
                             val latLonList = getLatLngGpx(data)
                             exportFiles(latLonList)
                         }
                     }
-                    result.data?.data.toString().endsWith("kml") -> {
+                    getFileName(uri).endsWith("kml") -> {
                         coroutineScope.launch {
-                            val data = readFile(result.data?.data)
+                            val data = readFile(uri)
                             val latLonList = getLatLngKml(data)
                             exportFiles(latLonList)
                         }
@@ -140,8 +139,30 @@ class ContributionActivity : AppCompatActivity() {
         }
     }
 
-    private fun readFile(data: Uri?): String {
-        val inputStream = contentResolver.openInputStream(data!!)
+    private fun getFileName(uri: Uri): String {
+        var result: String? = null
+        if (uri.scheme == "content") {
+            val cursor = contentResolver.query(uri, null, null, null, null)
+            try {
+                if (cursor != null && cursor.moveToFirst()) {
+                    result = cursor.getString(cursor.getColumnIndexOrThrow(OpenableColumns.DISPLAY_NAME))
+                }
+            }
+            catch (e:Exception){}
+            cursor!!.close()
+        }
+        if (result == null) {
+            result = uri.path
+            val cut = result!!.lastIndexOf('/')
+            if (cut != -1) {
+                result = result.substring(cut + 1)
+            }
+        }
+        return result
+    }
+
+    private fun readFile(data: Uri): String {
+        val inputStream = contentResolver.openInputStream(data)
         val r = BufferedReader(InputStreamReader(inputStream))
         var allLines = ""
         while (true) {

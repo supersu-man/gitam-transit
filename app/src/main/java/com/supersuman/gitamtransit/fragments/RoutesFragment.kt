@@ -25,7 +25,6 @@ class RoutesFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var mPrefs : SharedPreferences
-    private val data = mutableListOf<RoutesData>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -52,15 +51,15 @@ class RoutesFragment : Fragment() {
         val linearManager =LinearLayoutManager(requireActivity(),
             LinearLayoutManager.VERTICAL,false)
         recyclerView.layoutManager = linearManager
-        recyclerView.adapter = RoutesAdapter(data, requireActivity())
+        recyclerView.adapter = RoutesAdapter(mutableListOf(), requireActivity())
     }
 
     @SuppressLint("NotifyDataSetChanged")
     private fun getLatestData() = coroutineScope.launch {
+        val data = mutableListOf<RoutesData>()
         val jsonString =
             khttp.get("https://raw.githubusercontent.com/supersu-man/GitamTransit/main/assets/busRoutes.json").text
         val routes = JSONArray(jsonString)
-        data.clear()
         for (i in 0 until routes.length()) {
             val it = routes.getJSONObject(i)
             val busName = it.get("busName") as String
@@ -69,8 +68,7 @@ class RoutesFragment : Fragment() {
             data.add(busInfo)
         }
         activity?.runOnUiThread {
-            recyclerView.recycledViewPool.clear()
-            recyclerView.adapter?.notifyDataSetChanged()
+            recyclerView.adapter = RoutesAdapter(data, requireActivity())
         }
     }
 }

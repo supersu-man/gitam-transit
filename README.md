@@ -11,10 +11,10 @@ Students usually don't know the exact routes of the busses. Since GITAM college 
 This project proposes a system which would store the entire information of all the busses and their respective routes while having every bus stop information of the routes. This system of all the transit information at one place with visualised display of route will be helpful to many students and parents who would like to know the exact route of any bus, alternative busses if they miss the bus and what all bus stops each bus goes through. 
 
 <p>
- <img src="githubdocs/screenshot1.png" width="200" />
- <img src="githubdocs/screenshot2.png" width="200" /> 
- <img src="githubdocs/screenshot3.png" width="200" />
- <img src="githubdocs/screenshot4.png" width="200" />
+ <img src="githubdocs/screenshot1.jpg" width="200" />
+ <img src="githubdocs/screenshot2.jpg" width="200" /> 
+ <img src="githubdocs/screenshot3.jpg" width="200" />
+ <img src="githubdocs/screenshot4.jpg" width="200" />
 </p>
 
 <b> Functionality & Concepts used : </b>

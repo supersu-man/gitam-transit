@@ -14,7 +14,6 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.net.toFile
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.progressindicator.LinearProgressIndicator
@@ -52,7 +51,6 @@ class ContributionActivity : AppCompatActivity() {
         modifyViews()
         requestMyPermissions()
         initListeners()
-
     }
 
     private fun initViews(){
@@ -116,19 +114,20 @@ class ContributionActivity : AppCompatActivity() {
         return registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK){
                 val uri = result.data?.data!!
+                val fileName = getFileName(uri)
                 when {
-                    getFileName(uri).endsWith("gpx") -> {
+                    fileName.endsWith("gpx") -> {
                         coroutineScope.launch {
                             val data = readFile(uri)
                             val latLonList = getLatLngGpx(data)
-                            exportFiles(latLonList)
+                            exportFiles(latLonList, fileName)
                         }
                     }
-                    getFileName(uri).endsWith("kml") -> {
+                    fileName.endsWith("kml") -> {
                         coroutineScope.launch {
                             val data = readFile(uri)
                             val latLonList = getLatLngKml(data)
-                            exportFiles(latLonList)
+                            exportFiles(latLonList, fileName)
                         }
                     }
                     else -> {
@@ -198,7 +197,7 @@ class ContributionActivity : AppCompatActivity() {
         return latLonList
     }
 
-    private fun exportFiles(latLonList: MutableList<LatLng>) {
+    private fun exportFiles(latLonList: MutableList<LatLng>, fileName: String) {
 
         val jsonObject = JsonObject()
         jsonObject.addProperty("busName", "")
@@ -211,7 +210,7 @@ class ContributionActivity : AppCompatActivity() {
         val keyWordJsonArray = keywordsListToJson(keywordsList)
         jsonObject.add("keywords", keyWordJsonArray)
 
-        writeFile(jsonObject, "output.txt")
+        writeFile(jsonObject, "$fileName.txt")
     }
 
     private fun reverseGeoCode(latLonList: MutableList<LatLng>): MutableList<String> {

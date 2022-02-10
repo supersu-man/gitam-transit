@@ -1,6 +1,8 @@
 package com.supersuman.gitamtransit.fragments
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,17 +10,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.coroutines.launch
-import org.json.JSONArray
-import android.content.Context
-import android.content.SharedPreferences
-import com.google.gson.reflect.TypeToken
 import com.supersuman.gitamtransit.R
-import com.supersuman.gitamtransit.RoutesData
+import com.supersuman.gitamtransit.helpers.RoutesData
 import com.supersuman.gitamtransit.adapters.RoutesAdapter
 import com.supersuman.gitamtransit.coroutineScope
-import kotlinx.coroutines.Dispatchers
-import java.lang.reflect.Type
+import kotlinx.coroutines.launch
+import org.json.JSONArray
 
 
 class RoutesFragment : Fragment() {

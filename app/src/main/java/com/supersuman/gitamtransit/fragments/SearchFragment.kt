@@ -15,7 +15,7 @@ import com.commit451.teleprinter.Teleprinter
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.supersuman.gitamtransit.R
-import com.supersuman.gitamtransit.RoutesData
+import com.supersuman.gitamtransit.helpers.RoutesData
 import com.supersuman.gitamtransit.adapters.SearchAdapter
 import com.supersuman.gitamtransit.coroutineScope
 import kotlinx.coroutines.launch

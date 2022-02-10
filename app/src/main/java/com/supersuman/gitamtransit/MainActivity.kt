@@ -1,34 +1,22 @@
 package com.supersuman.gitamtransit
 
-import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
-import android.location.Address
-import android.location.Geocoder
 import android.net.Uri
 import android.os.Bundle
-import android.view.View
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.button.MaterialButton
-import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
-import com.google.android.material.progressindicator.CircularProgressIndicator
-import com.google.gson.Gson
-import com.supersuman.gitamtransit.adapters.RoutesAdapter
 import com.supersuman.gitamtransit.fragments.FavouritesFragment
 import com.supersuman.gitamtransit.fragments.RoutesFragment
 import com.supersuman.gitamtransit.fragments.SearchFragment
+import com.supersuman.githubapkupdater.Updater
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import org.json.JSONArray
-import java.util.*
 
 val coroutineScope = CoroutineScope(Dispatchers.IO)
 
@@ -55,6 +43,7 @@ class MainActivity : AppCompatActivity() {
         initViews()
         initListeners()
         setFragment()
+        checkForUpdates(this)
     }
 
     private fun initViews() {
@@ -68,14 +57,6 @@ class MainActivity : AppCompatActivity() {
         routesFragment = RoutesFragment()
         searchFragment = SearchFragment()
         favouritesFragment = FavouritesFragment()
-    }
-
-
-    private fun setFragment() {
-        val manager = supportFragmentManager.beginTransaction()
-        manager.replace(frameLayout, routesFragment)
-        manager.commit()
-        title.text = "Bus Routes"
     }
 
     private fun initListeners() {
@@ -128,6 +109,40 @@ class MainActivity : AppCompatActivity() {
             }
             true
         }
+    }
+
+    private fun setFragment() {
+        val manager = supportFragmentManager.beginTransaction()
+        manager.replace(frameLayout, routesFragment)
+        manager.commit()
+        title.text = "Bus Routes"
+    }
+
+    private fun checkForUpdates(mainActivity: MainActivity) = coroutineScope.launch {
+        val updater = Updater(mainActivity, "https://github.com/supersu-man/GitamTransit/releases/latest")
+        if (!updater.isInternetConnection()) return@launch
+        updater.init()
+        updater.isNewUpdateAvailable {
+            println("test")
+            showDialogue(updater, mainActivity)
+        }
+    }
+
+    private fun showDialogue(updater: Updater, mainActivity: MainActivity) = coroutineScope.launch(Dispatchers.Main){
+        MaterialAlertDialogBuilder(mainActivity)
+            .setTitle("New update found")
+            .setMessage("Would you like to download the latest apk?")
+            .setNegativeButton("No") { _, _ -> }
+            .setPositiveButton("Download") { _, _ ->
+                if (updater.hasPermissionsGranted()){
+                    updater.requestDownload()
+                } else{
+                    updater.requestMyPermissions {
+                        updater.requestDownload()
+                    }
+                }
+            }
+            .show()
     }
 
 }

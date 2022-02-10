@@ -4,21 +4,19 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.supersuman.gitamtransit.R
-import com.supersuman.gitamtransit.RoutesData
+import com.supersuman.gitamtransit.helpers.RoutesData
 import com.supersuman.gitamtransit.adapters.RoutesAdapter
 import com.supersuman.gitamtransit.coroutineScope
+import com.supersuman.gitamtransit.helpers.getStarsList
 import kotlinx.coroutines.launch
 import org.json.JSONArray
-import java.lang.reflect.Type
 
 class FavouritesFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
@@ -68,7 +66,7 @@ class FavouritesFragment : Fragment() {
         val data = mutableListOf<RoutesData>()
         val jsonString = khttp.get("https://raw.githubusercontent.com/supersu-man/GitamTransit/main/assets/busRoutes.json").text
         val routes = JSONArray(jsonString)
-        val starList = getStarsList()
+        val starList = getStarsList(sharedPreferences)
         for (i in 0 until routes.length()) {
             val it = routes.getJSONObject(i)
             val busName = it.get("busName") as String
@@ -80,14 +78,5 @@ class FavouritesFragment : Fragment() {
         activity?.runOnUiThread {
             recyclerView.adapter = RoutesAdapter(data, requireActivity())
         }
-    }
-
-    private fun getStarsList(): MutableList<String> {
-        val gson = Gson()
-        val string = sharedPreferences.getString("Stars", "")
-        if(string=="") return mutableListOf()
-        val type: Type = object : TypeToken<MutableList<String?>?>() {}.type
-        val starsList : MutableList<String> =  gson.fromJson(string, type)
-        return starsList
     }
 }

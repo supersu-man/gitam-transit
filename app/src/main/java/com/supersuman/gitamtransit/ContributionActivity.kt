@@ -17,8 +17,6 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.progressindicator.LinearProgressIndicator
-import com.google.gson.JsonArray
-import com.google.gson.JsonObject
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionDeniedResponse
@@ -26,6 +24,8 @@ import com.karumi.dexter.listener.PermissionGrantedResponse
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.single.PermissionListener
 import kotlinx.coroutines.launch
+import org.json.JSONArray
+import org.json.JSONObject
 import org.jsoup.Jsoup
 import java.io.BufferedReader
 import java.io.File
@@ -148,7 +148,7 @@ class ContributionActivity : AppCompatActivity() {
                 }
             }
             catch (e:Exception){}
-            cursor!!.close()
+            cursor?.close()
         }
         if (result == null) {
             result = uri.path
@@ -199,16 +199,16 @@ class ContributionActivity : AppCompatActivity() {
 
     private fun exportFiles(latLonList: MutableList<LatLng>, fileName: String) {
 
-        val jsonObject = JsonObject()
-        jsonObject.addProperty("busName", "")
-        jsonObject.addProperty("startPoint", "")
+        val jsonObject = JSONObject()
+        jsonObject.put("busName", "")
+        jsonObject.put("startPoint", "")
 
         val busRouteJsonArray = latLonListToJson(latLonList)
-        jsonObject.add("route", busRouteJsonArray)
+        jsonObject.put("route", busRouteJsonArray)
 
         val keywordsList = reverseGeoCode(latLonList)
         val keyWordJsonArray = keywordsListToJson(keywordsList)
-        jsonObject.add("keywords", keyWordJsonArray)
+        jsonObject.put("keywords", keyWordJsonArray)
 
         writeFile(jsonObject, "$fileName.txt")
     }
@@ -248,28 +248,28 @@ class ContributionActivity : AppCompatActivity() {
         return mutableList
     }
 
-    private fun latLonListToJson(latLonList: MutableList<LatLng>): JsonArray {
-        val jsonArray = JsonArray()
+    private fun latLonListToJson(latLonList: MutableList<LatLng>): JSONArray {
+        val jsonArray = JSONArray()
         latLonList.forEach {
-            val temp = JsonArray().apply {
-                this.add(it.latitude)
-                this.add(it.longitude)
+            val temp = JSONArray().apply {
+                this.put(it.latitude)
+                this.put(it.longitude)
             }
-            jsonArray.add(temp)
+            jsonArray.put(temp)
         }
         return jsonArray
     }
 
-    private fun keywordsListToJson(keywordsList: MutableList<String>): JsonArray {
+    private fun keywordsListToJson(keywordsList: MutableList<String>): JSONArray {
 
-        val jsonArray = JsonArray()
+        val jsonArray = JSONArray()
         keywordsList.forEach {
-            jsonArray.add(it)
+            jsonArray.put(it)
         }
         return jsonArray
     }
 
-    private fun writeFile(jsonObject: JsonObject, filename: String) {
+    private fun writeFile(jsonObject: JSONObject, filename: String) {
         val data = jsonObject.toString()
         val file = File(getExternalFilesDir(null), filename)
         file.createNewFile()

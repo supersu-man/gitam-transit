@@ -11,12 +11,11 @@ import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.supersuman.gitamtransit.MapsActivity
 import com.supersuman.gitamtransit.R
-import com.supersuman.gitamtransit.RoutesData
-import java.lang.reflect.Type
+import com.supersuman.gitamtransit.helpers.RoutesData
+import com.supersuman.gitamtransit.helpers.getStarsList
+import com.supersuman.gitamtransit.helpers.updateStarsList
 
 class RoutesAdapter(private val data: MutableList<RoutesData>, private val requireActivity: FragmentActivity) : RecyclerView.Adapter<RoutesAdapter.ViewHolder>() {
 
@@ -46,45 +45,28 @@ class RoutesAdapter(private val data: MutableList<RoutesData>, private val requi
             requireActivity.startActivity((intent))
         }
 
-        setAllStars(busName, getStarsList(), holder)
+        setStar(busName, getStarsList(sharedPreferences), holder)
 
         holder.starButton.setOnClickListener {
-            val newStarsList = getStarsList()
+            val newStarsList = getStarsList(sharedPreferences)
             if (busName in newStarsList){
                 it.setBackgroundResource(R.drawable.ic_baseline_star_outline_24)
                 newStarsList.remove(busName)
-                updateStarsList(newStarsList)
+                updateStarsList(newStarsList,sharedPreferences)
             } else{
                 it.setBackgroundResource(R.drawable.ic_baseline_star_24)
                 newStarsList.add(busName)
-                updateStarsList(newStarsList)
+                updateStarsList(newStarsList,sharedPreferences)
             }
         }
     }
 
-    private fun setAllStars(busName: String, starsList: MutableList<String>, holder: ViewHolder) {
+    private fun setStar(busName: String, starsList: MutableList<String>, holder: ViewHolder) {
         if (busName in starsList){
             holder.starButton.setBackgroundResource(R.drawable.ic_baseline_star_24)
         } else{
             holder.starButton.setBackgroundResource(R.drawable.ic_baseline_star_outline_24)
         }
-    }
-
-    private fun updateStarsList(starsList : MutableList<String>){
-        val prefsEditor = sharedPreferences.edit()
-        val gson = Gson()
-        val string = gson.toJson(starsList)
-        prefsEditor?.putString("Stars", string)
-        prefsEditor?.apply()
-    }
-
-    private fun getStarsList(): MutableList<String> {
-        val gson = Gson()
-        val string = sharedPreferences.getString("Stars", "")
-        if(string=="") return mutableListOf()
-        val type: Type = object : TypeToken<MutableList<String?>?>() {}.type
-        val starsList : MutableList<String> =  gson.fromJson(string, type)
-        return starsList
     }
 
     override fun getItemCount(): Int {

@@ -10,6 +10,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Get Tag
+        id: var
+        run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
+
       - name: Access Api keys
         env:
           apiKey: ${{ secrets.API_KEY }}
@@ -33,15 +37,6 @@ jobs:
           keyStorePassword: ${{ secrets.KEYSTOREPASSWORD }}
           keyPassword: ${{ secrets.KEYPASSWORD }}
 
-      - name: Rename APK
-        run: mv ${{steps.sign_app.outputs.signedReleaseFile}} app-release-signed.apk
-
-      - name: Make artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: app-release-signed
-          path: app-release-signed.apk
-
       - name: Create release
         uses: actions/create-release@v1
         id: create_release
@@ -53,16 +48,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
-      - name: Get Tag
-        id: var
-        run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
-
       - name: Upload APK
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: app-release-signed.apk
-          asset_name: app-release-signed-${{ steps.var.outputs.tag }}.apk
+          asset_path: ${{steps.sign_apk.outputs.signedReleaseFile}}
+          asset_name: GitamTransit-${{ steps.var.outputs.tag }}.apk
           asset_content_type: application/zip

@@ -27,7 +27,7 @@ This project proposes a system which would store the entire information of all t
 
 <b> Application Link & Future Scope : </b>
 
-The app is still being tested and more routes of busses are being added. You can get the app from [here](https://github.com/supersu-man/GitamTransit/releases/tag/Pre-alpha6) to try.
+The app is still being tested and more routes of busses are being added. You can get the app from [here](https://github.com/supersu-man/GitamTransit/releases) to try.
 
 Once the app is done with adding all the Bus routes, then more information like fees, timings, etc will be added. If more people start using it then other transit options will also be added so people can pool together. People can contribute by giving information of their bus routes if there is a change in bus route or maybe a tracking system in future. 
 

@@ -37,6 +37,12 @@ jobs:
           keyStorePassword: ${{ secrets.KEYSTOREPASSWORD }}
           keyPassword: ${{ secrets.KEYPASSWORD }}
 
+      - name: Build Changelog
+        id: changelog
+        uses: ardalanamini/auto-changelog@v1.1.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Create release
         uses: actions/create-release@v1
         id: create_release
@@ -45,6 +51,8 @@ jobs:
           prerelease: false
           release_name: Release ${{ github.ref }}
           tag_name: ${{ github.ref }}
+          body: |
+            ${{ steps.changelog.outputs.changelog }}
         env:
           GITHUB_TOKEN: ${{ github.token }}
 

@@ -1,0 +1,37 @@
+name: Test Build
+on: [push]
+jobs:
+  Build:
+    name: Test and Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Access Api keys
+        env:
+          apiKey: ${{ secrets.API_KEY }}
+          path: app/src/main/res/values/secrets.xml
+        run: |
+          touch $path
+          echo \<resources\> >> $path
+          echo \<string name=\"google_maps_key\"\>$apiKey\</string\> >> $path
+          echo \</resources\> >> $path
+
+      - name: Build APK
+        run: bash ./gradlew assembleRelease
+
+      - name: Sign APK
+        id: sign_apk
+        uses: r0adkll/sign-android-release@v1
+        with:
+          releaseDirectory: app/build/outputs/apk/release
+          signingKeyBase64: ${{ secrets.SIGNINGKEYBASE64 }}
+          alias: ${{ secrets.ALIAS }}
+          keyStorePassword: ${{ secrets.KEYSTOREPASSWORD }}
+          keyPassword: ${{ secrets.KEYPASSWORD }}
+
+      - name: Build Changelog
+        id: changelog
+        uses: ardalanamini/auto-changelog@v1.1.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}

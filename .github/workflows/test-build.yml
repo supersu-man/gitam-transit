@@ -1,5 +1,8 @@
 name: Test Build
-on: [push]
+on:
+  push:
+    branches:
+      - '**'
 jobs:
   Build:
     name: Test and Build
@@ -32,6 +35,6 @@ jobs:
 
       - name: Build Changelog
         id: changelog
-        uses: ardalanamini/auto-changelog@v1.1.0
+        uses: ardalanamini/auto-changelog@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
